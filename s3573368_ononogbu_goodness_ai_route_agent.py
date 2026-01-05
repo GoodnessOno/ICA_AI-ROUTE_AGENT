@@ -14,7 +14,7 @@ This code proves:
 - Dijkstra finds the cheapest path but without guidance
 - A* makes every move count using a smart distance estimate (heuristic)
 
-The map is randomly generated using my student ID as the seed,
+The map is randomly generated using my student ID as initial the seed,
 so the world I test in is reproducible and uniquely mine.
 """
 
@@ -29,7 +29,6 @@ from collections import deque
 from typing import Dict, List, Optional, Tuple, Set, Iterable
 
 Pos = Tuple[int, int]
-
 
 # ----------------------------
 # Data structures
