@@ -119,7 +119,7 @@ with st.sidebar:
     diagonal = st.toggle("Allow diagonal movement (8-way)", value=True)
 
     seed = st.number_input(
-        "Seed (put in any figure for reproducibility)",
+        "Seed (put in an integer for reproducibility)",
         value=123456789,
         step=1
     )
