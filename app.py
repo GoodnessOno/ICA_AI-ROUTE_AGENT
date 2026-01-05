@@ -114,11 +114,13 @@ with st.sidebar:
         ["A*", "Dijkstra", "BFS"]
     )
 
+    maze_size = st.slider("Maze size", 15, 41, 21, step=2)
+
     diagonal = st.toggle("Allow diagonal movement (8-way)", value=True)
 
     seed = st.number_input(
-        "Seed (use your student ID for reproducibility)",
-        value=3573368,
+        "Seed (put in any figure for reproducibility)",
+        value=123456789,
         step=1
     )
 
@@ -128,9 +130,7 @@ with st.sidebar:
     show_path_fill = st.toggle("Highlight full path", value=True)
     animate = st.toggle("Animate movement", value=True)
     speed = st.slider("Animation speed", 0.01, 0.25, 0.06)
-
     st.divider()
-    regenerate = st.button("Regenerate maze (same seed)")
     run_btn = st.button("Run route planning")
 
 
@@ -139,25 +139,41 @@ with st.sidebar:
 # ----------------------------
 if "maze_grid" not in st.session_state:
     st.session_state.maze_grid = None
+
 if "maze_meta" not in st.session_state:
     st.session_state.maze_meta = {}
 
+if "maze_signature" not in st.session_state:
+    st.session_state.maze_signature = None
+
+
 def generate_maze_world():
-    grid = generate_maze_grid(rows=15, cols=15, heavy_cost_prob=0.30, seed=int(seed))
+    grid = generate_maze_grid(rows=int(maze_size), cols=int(maze_size), heavy_cost_prob=0.30, seed=int(seed))
     rows, cols = len(grid), len(grid[0])
     start, goal = build_start_goal_for_maze(scenario_name, rows, cols)
     ensure_start_goal_free(grid, start, goal)
+
     st.session_state.maze_grid = grid
-    st.session_state.maze_meta = {"start": start, "goal": goal, "rows": rows, "cols": cols}
+    st.session_state.maze_meta = {
+        "start": start,
+        "goal": goal,
+        "rows": rows,
+        "cols": cols,
+        "seed": int(seed),
+        "scenario": scenario_name,
+    }
+    st.session_state.maze_signature = (scenario_name, int(seed), int(maze_size), int(maze_size))
 
-# Generate maze at startup if user selected Maze mode
-if world_type == "Maze (interactive)" and st.session_state.maze_grid is None:
-    generate_maze_world()
 
-# Regenerate when requested
-if regenerate and world_type == "Maze (interactive)":
-    generate_maze_world()
+# Always ensure maze exists and is up to date when Maze mode is selected
+if world_type == "Maze (interactive)":
+    # Signature changes when the user changes scenario or seed
+    desired_signature = (scenario_name, int(seed), 15, 15)
 
+    if (st.session_state.maze_grid is None
+        or not st.session_state.maze_meta
+        or st.session_state.maze_signature != desired_signature):
+        generate_maze_world()
 
 # ----------------------------
 # Main run
