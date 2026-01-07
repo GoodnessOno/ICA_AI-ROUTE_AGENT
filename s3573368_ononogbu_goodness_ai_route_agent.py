@@ -442,7 +442,7 @@ def bfs_unweighted(
 ) -> SearchResult:
     """
     BFS baseline: treats all traversable cells as equal cost.
-    Note: BFS is not cost-optimal for weighted terrain (this is intentional and valuable to discuss).
+    Note: BFS is not cost-optimal for weighted terrain.
     """
     rows, cols = len(grid), len(grid[0])
     t0 = time.perf_counter()
